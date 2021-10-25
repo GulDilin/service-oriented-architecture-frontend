@@ -1,30 +1,27 @@
 <template>
-  <v-data-table
-    :loading="loading"
+  <AppItemsTable
     :headers="headers"
-    :items="items"
+    api-name="human"
   >
-  </v-data-table>
+  </AppItemsTable>
 </template>
 
 <script>
+  import AppItemsTable from '@/components/AppItemsTable';
+
   export default {
     name: 'HumanTable',
 
+    components: {
+      AppItemsTable,
+    },
+
     data() {
       return {
-        items: [],
-        total: 0,
-        itemsPerPage: 10,
-        loading: false
       };
     },
 
     computed: {
-      pagesAmount() {
-        return Math.ceil(this.total / this.itemsPerPage)
-      },
-
       headers() {
         return [
           {
@@ -38,23 +35,15 @@
             align: 'center',
             sortable: false,
             value: 'birthday',
-          }
+          },
+          {
+            text: 'Actions',
+            value: 'actions',
+            align: 'center',
+            sortable: false
+          },
         ]
       },
     },
-
-    methods: {
-      getItems() {
-        this.$api.human.get()
-        .then( ({data}) => {
-          this.items = data.results;
-          this.total = data.total;
-        })
-      },
-    },
-
-    mounted() {
-      this.getItems();
-    }
   }
 </script>

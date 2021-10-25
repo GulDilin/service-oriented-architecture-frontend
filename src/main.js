@@ -3,9 +3,11 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import api from '@/api';
 import config from '@/config';
+import enums from '@/enums';
 import router from '@/router';
 
 Vue.prototype.$api = api;
+Vue.prototype.$enums = enums;
 Vue.prototype.$config = config;
 Vue.config.productionTip = false
 
