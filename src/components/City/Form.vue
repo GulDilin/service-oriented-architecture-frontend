@@ -8,6 +8,7 @@
           dense
           outlined
           placeholder="Name"
+          @input="$emit('update:name', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -16,6 +17,7 @@
           dense
           outlined
           placeholder="Governor Id"
+          @input="$emit('update:governor', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -24,6 +26,7 @@
           dense
           outlined
           placeholder="Coordinates Id"
+          @input="$emit('update:coordinates', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -32,6 +35,7 @@
           dense
           outlined
           placeholder="Population"
+          @input="$emit('update:population', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -40,6 +44,7 @@
           dense
           outlined
           placeholder="populationDensity"
+          @input="$emit('update:population-density', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -48,6 +53,7 @@
           dense
           outlined
           placeholder="area"
+          @input="$emit('update:area', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -56,6 +62,7 @@
           dense
           outlined
           placeholder="carCode"
+          @input="$emit('update:car-code', $event)"
         >
         </v-text-field>
         <v-text-field
@@ -64,6 +71,7 @@
           dense
           outlined
           placeholder="metersAboveSeaLevel"
+          @input="$emit('update:meters-above-sea-level', $event)"
         >
         </v-text-field>
         <v-select
@@ -75,6 +83,7 @@
           :items="$enums.Climate.getValues()"
           item-text="key"
           item-value="key"
+          @input="$emit('update:climate', $event)"
         >
         </v-select>
       </v-col>
@@ -91,29 +100,34 @@
         type: String,
       },
       governor: {
-        type: Number,
+        type: [String, Number]
       },
       coordinates: {
-        type: Number,
+        type: [String, Number]
       },
       climate: {
         type: String,
       },
       area: {
-        type: Number,
+        type: [String, Number]
       },
       population: {
-        type: Number,
+        type: [String, Number]
       },
       metersAboveSeaLevel: {
-        type: Number,
+        type: [String, Number]
       },
       populationDensity: {
-        type: Number,
+        type: [String, Number]
       },
       carCode: {
-        type: Number,
+        type: [String, Number]
       },
+    },
+
+    data() {
+      return {
+      };
     },
 
     methods: {

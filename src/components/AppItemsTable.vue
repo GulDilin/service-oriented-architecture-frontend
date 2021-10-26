@@ -56,9 +56,17 @@
         <v-btn
           icon
           @click="openSureDialog(item)"
+          color="error"
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
+      </template>
+
+      <template
+        v-for="h in headers"
+        v-slot:[`header.${h}`]="header"
+      >
+        {{ header }}
       </template>
     </v-data-table>
 
@@ -71,7 +79,7 @@
         <v-card-text>
           Are you sure that you want to delete item?
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="pb-4">
           <v-btn color="secondary" @click="sureDeleteDialog = false">Cancel</v-btn>
           <v-btn
             :loading="loadingDelete"

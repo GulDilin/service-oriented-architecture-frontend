@@ -3,8 +3,9 @@
     <AppItemsTable
       :headers="headers"
       api-name="city"
-      @click:add="creationDialog = true"
       :update-key="updateKey"
+      @click:add="creationDialog = true"
+      @click:edit="editItem"
     >
     </AppItemsTable>
 
@@ -38,6 +39,37 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      v-model="editingDialog"
+      max-width="600"
+    >
+      <v-card max-width="600">
+        <v-card-title>
+          Edit City with id {{ editable.id }}
+        </v-card-title>
+        <city-form
+          ref="formEdit"
+          :name.sync="editable.name"
+          :governor.sync="editable.governor"
+          :coordinates.sync="editable.coordinates"
+          :climate.sync="editable.climate"
+          :area.sync="editable.area"
+          :population.sync="editable.population"
+          :metersAboveSeaLevel.sync="editable.metersAboveSeaLevel"
+          :populationDensity.sync="editable.populationDensity"
+          :carCode.sync="editable.carCode"
+        ></city-form>
+        <v-card-actions class="pb-4">
+          <v-btn color="secondary" @click="editingDialog = false">Cancel</v-btn>
+          <v-btn
+            :loading="loadingEdit"
+            color="primary"
+            @click="saveEditable()"
+          >Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -55,20 +87,24 @@
     data() {
       return {
         creationDialog: false,
+        editingDialog: false,
         loadingCreate: false,
+        loadingEdit: false,
         updateKey: 1,
 
         item: {
-          name: undefined,
-          governor: undefined,
-          coordinates: undefined,
-          climate: undefined,
-          area: undefined,
-          population: undefined,
-          metersAboveSeaLevel: undefined,
-          populationDensity: undefined,
-          carCode: undefined,
-        }
+          name: null,
+          governor: null,
+          coordinates: null,
+          climate: null,
+          area: null,
+          population: null,
+          metersAboveSeaLevel: null,
+          populationDensity: null,
+          carCode: null,
+        },
+
+        editable: {},
       };
     },
 
@@ -146,18 +182,49 @@
     },
 
     methods: {
+      // formatItem(item) {
+      //   item = { ...item };
+      //   this.$utils.numbers.mapNumberOrValueFields(item,
+      //     ['area', 'governor', 'coordinates', 'population', 'populationDensity', 'carCode'])
+      //   return item;
+      // },
+
       createItem() {
         this.loadingCreate = true;
-        this.$api.city.post(this.item)
+        let item = { ...this.item };
+        // let item = this.formatItem(this.item);
+        this.$api.city.post(item)
         .then( () => {
-          this.updateKey = 1;
+          this.updateKey += 1;
           this.creationDialog = false;
           this.$refs.form.reset();
         })
         .finally( () => {
           this.loadingCreate = false;
         })
-      }
+      },
+
+      saveEditable() {
+        // let item = this.formatItem(this.editable);
+        let item = { ...this.editable };
+        if (!item.id) return;
+        this.loadingEdit = true;
+        this.$api.city.replace(item.id, item)
+        .then( () => {
+          this.updateKey += 1;
+          this.editingDialog = false;
+          this.$refs.formEdit.reset();
+        })
+        .finally( () => {
+          this.loadingEdit = false;
+        })
+      },
+
+
+      editItem(item) {
+        this.editable = { ...item };
+        this.editingDialog = true;
+      },
     }
   }
 </script>
