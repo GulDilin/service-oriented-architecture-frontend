@@ -40,6 +40,8 @@
                 item-text="text"
                 item-value="key"
                 hide-details
+                label="Filter Mode"
+                placeholder="Filter Mode"
                 @input="setFilterMode(header.value, $event)"
               >
               </v-select>
@@ -51,6 +53,8 @@
                 dense
                 hide-details
                 clearable
+                label="Value"
+                placeholder="Value"
                 @input="setFilterValue(header.value, $event)"
               >
               </v-text-field>

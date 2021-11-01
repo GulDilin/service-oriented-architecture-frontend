@@ -3,8 +3,10 @@
     <AppItemsTable
       :headers="headers"
       api-name="city"
-      :sortableHeaders="[ 'id', 'coordinatesId', 'governorId', 'name', 'population', 'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
-      :filterableHeaders="[ 'id', 'coordinatesId', 'governorId', 'name', 'population', 'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
+      :sortableHeaders="[ 'id', 'coordinatesId', 'creationDate', 'governorId', 'name', 'population',
+        'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
+      :filterableHeaders="[ 'id', 'coordinatesId', 'creationDate', 'governorId',
+        'name', 'climate', 'population', 'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
       :update-key="updateKey"
       @click:add="creationDialog = true"
       @click:edit="editItem"
@@ -118,6 +120,13 @@
             align: 'center',
             sortable: false,
             value: 'id',
+          },
+          {
+            text: 'Creation Date',
+            align: 'center',
+            sortable: false,
+            value: 'creationDate',
+            cellClass: 'body-2'
           },
           {
             text: 'Name',

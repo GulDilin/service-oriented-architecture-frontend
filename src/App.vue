@@ -9,8 +9,11 @@
 
     <AppAlerts/>
 
-    <v-main class="grey">
-      <v-container class="fill-height">
+    <v-main class="grey overflow-hidden">
+      <v-container
+        class="grey"
+        :fluid="$vuetify.breakpoint.lgAndDown"
+      >
         <router-view></router-view>
       </v-container>
     </v-main>
