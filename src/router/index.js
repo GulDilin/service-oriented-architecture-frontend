@@ -38,7 +38,7 @@ const routes = [
   },
   {
     path: '',
-    redirect: { name: 'main' },
+    redirect: { name: 'city' },
   },
 ];
 
