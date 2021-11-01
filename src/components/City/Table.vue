@@ -3,6 +3,8 @@
     <AppItemsTable
       :headers="headers"
       api-name="city"
+      :sortableHeaders="[ 'id', 'coordinatesId', 'governorId', 'name', 'population', 'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
+      :filterableHeaders="[ 'id', 'coordinatesId', 'governorId', 'name', 'population', 'populationDensity', 'carCode', 'metersAboveSeaLevel' ]"
       :update-key="updateKey"
       @click:add="creationDialog = true"
       @click:edit="editItem"

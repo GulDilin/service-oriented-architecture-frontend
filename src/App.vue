@@ -44,4 +44,10 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+
+  .flex-equal {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
 </style>

@@ -30,6 +30,12 @@ const Climate = generateEnumeration(Object.freeze({
   SUBARCTIC: { key: 'SUBARCTIC' }
 }))
 
+const SortingMode = generateEnumeration(Object.freeze({
+  ASC: { key: 'ASC', value: '+' },
+  DESC: { key: 'DESC', value: '-' },
+  UNSET: { key: 'UNSET', value: undefined }
+}))
+
 const FilteringCombinations = Object.freeze({
   CONTAINS: [ Filtering.CONTAINS, Filtering.EQUALS, Filtering.IS_NULL ],
   EQUALS: [ Filtering.EQUALS, Filtering.IS_NULL ],
@@ -40,4 +46,5 @@ export default Object.freeze({
   Filtering,
   FilteringCombinations,
   Climate,
+  SortingMode,
 });

@@ -11,6 +11,98 @@
       ></v-pagination>
     </div>
 
+    <v-dialog
+      v-model="dialogFilter"
+      max-width="900"
+      min-height="100"
+    >
+      <v-card
+        min-height="100"
+      >
+        <v-card-title>
+          Filtering
+        </v-card-title>
+        <v-card-text>
+          <div
+            v-for="header in filterableHeadersV"
+            :key="header.value"
+            class="title d-flex flex-row align-center py-2"
+          >
+            <div class="flex-equal">
+              {{ header.text }}
+            </div>
+            <div class="flex-equal px-1">
+              <v-select
+                :value="header.filterMode"
+                outlined
+                dense
+                :items="$enums.Filtering.getValues()"
+                item-text="text"
+                item-value="key"
+                hide-details
+                @input="setFilterMode(header.value, $event)"
+              >
+              </v-select>
+            </div>
+            <div class="flex-equal px-1">
+              <v-text-field
+                :value="header.filterValue"
+                outlined
+                dense
+                hide-details
+                clearable
+                @input="setFilterValue(header.value, $event)"
+              >
+              </v-text-field>
+            </div>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="dialogSorting"
+      max-width="600"
+      min-height="100"
+    >
+      <v-card
+        min-height="100"
+      >
+        <v-card-title>
+          Sorting
+        </v-card-title>
+        <v-card-text>
+          <div
+            v-for="header in sortableHeadersV"
+            :key="header.value"
+            class="title d-flex flex-row align-center"
+          >
+            <div class="mr-4" style="min-width: 300px;">
+              {{ header.text }}
+            </div>
+            <v-icon
+              :color="header.sortingMode === $enums.SortingMode.ASC ? 'primary' : undefined"
+              @click="setSoringMode(header.value, $enums.SortingMode.ASC)"
+            >
+              mdi-arrow-up
+            </v-icon>
+            <v-icon
+              :color="header.sortingMode === $enums.SortingMode.DESC ? 'primary' : undefined"
+              @click="setSoringMode(header.value, $enums.SortingMode.DESC)"
+            >
+              mdi-arrow-down
+            </v-icon>
+            <v-icon
+              :color="!header.sortingMode ? 'primary' : undefined"
+              @click="setSoringMode(header.value, undefined)"
+            >
+              mdi-close
+            </v-icon>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <v-data-table
       :loading="loading"
       :headers="headers"
@@ -20,7 +112,25 @@
       hide-default-footer
     >
       <template #top>
-        <v-row no-gutters class="grey lighten-2">
+        <v-row no-gutters class="grey lighten-2 px-4">
+          <v-btn
+            icon
+            outlined
+            class="ma-2"
+            color="secondary"
+            @click="activateFilter"
+          >
+            <v-icon>mdi-filter</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            outlined
+            class="ma-2"
+            color="secondary"
+            @click="activateSorting"
+          >
+            <v-icon>mdi-sort</v-icon>
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn
             icon
@@ -61,13 +171,6 @@
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
-
-      <template
-        v-for="h in headers"
-        v-slot:[`header.${h}`]="header"
-      >
-        {{ header }}
-      </template>
     </v-data-table>
 
     <v-divider></v-divider>
@@ -96,7 +199,7 @@
   export default {
     name: 'AppItemsTable',
 
-    props: [ 'apiName', 'headers', 'updateKey' ],
+    props: [ 'apiName', 'headers', 'updateKey', 'sortableHeaders', 'filterableHeaders' ],
 
     data() {
       return {
@@ -108,6 +211,13 @@
         loading: false,
         sureDeleteDialog: false,
         loadingDelete: false,
+
+        dialogFilter: false,
+        dialogSorting: false,
+        sortableHeadersV: [],
+        filterableHeadersV: [],
+        sortingFilter: [],
+        filterFields: {},
       };
     },
 
@@ -129,24 +239,99 @@
         handler() {
           this.page = 1;
         }
-      }
+      },
+
+      headers: {
+        deep: true,
+        immediate: true,
+        handler() {
+          this.updateSortableHeadersV();
+          this.updateFilterableHeadersV();
+        },
+      },
+
+      sortableHeadersV: {
+        deep: true,
+        immediate: true,
+        handler: 'updateSortingFilter',
+      },
+
+      filterableHeadersV: {
+        deep: true,
+        immediate: true,
+        handler: 'updateFieldFilter',
+      },
+
+      filterO: {
+        deep: true,
+        immediate: true,
+        handler: 'getItems',
+      },
     },
 
     computed: {
       pagesAmount() {
         return Math.ceil(this.total / this.itemsPerPage)
       },
+
+      filterO() {
+        const { page, itemsPerPage, sortingFilter, filterFields } = this;
+        let offset = (+page - 1) * itemsPerPage;
+        return {
+          ...filterFields,
+          offset: offset,
+          limit: itemsPerPage,
+          sorting: sortingFilter,
+        };
+      },
     },
 
     methods: {
+      updateSortableHeadersV() {
+        let { headers, sortableHeaders } = this;
+        headers ??= [];
+        sortableHeaders ??= [];
+        console.log({headers, sortableHeaders})
+        this.sortableHeadersV = headers?.filter( it => sortableHeaders.includes(it.value) ) ?? [];
+      },
+
+      updateFilterableHeadersV() {
+        let { headers, filterableHeaders } = this;
+        headers ??= [];
+        filterableHeaders ??= [];
+        console.log({headers, filterableHeaders})
+        this.filterableHeadersV = headers?.filter( it => filterableHeaders.includes(it.value) ) ?? [];
+      },
+
+      updateSortingFilter() {
+        this.sortingFilter = this.sortableHeadersV
+        .filter( h => !!h.sortingMode )
+        .map( ({ value, sortingMode })=> `${sortingMode.value}${value}`);
+      },
+
+      updateFieldFilter() {
+        let fields = {};
+        this.filterableHeadersV
+        .filter( h => !!h.filterValue )
+        .forEach( ({ filterMode, value, filterValue }) => {
+          fields[value] = `${filterMode}:${filterValue}`;
+        });
+        this.filterFields = fields;
+      },
+
+      setFilterValue(header, value) {
+        let headerObj = this.headers.find( it => it.value === header );
+        this.$set(headerObj, 'filterValue', value);
+      },
+
+      setFilterMode(header, mode) {
+        let headerObj = this.headers.find( it => it.value === header );
+        this.$set(headerObj, 'filterMode', mode);
+      },
+
       getItems() {
-        const { page, itemsPerPage } = this;
-        let offset = (+page - 1) * itemsPerPage;
         this.loading = true
-        this.$api[this.apiName].get({
-          offset: offset,
-          limit: itemsPerPage,
-        })
+        this.$api[this.apiName].get(this.filterO)
         .then( ({data}) => {
           this.items = data.results;
           this.total = data.total;
@@ -169,6 +354,19 @@
           this.sureDeleteDialog = false;
           this.getItems();
         })
+      },
+
+      activateFilter() {
+        this.dialogFilter = true;
+      },
+
+      activateSorting() {
+        this.dialogSorting = true;
+      },
+
+      setSoringMode(header, mode) {
+        let headerObj = this.headers.find( it => it.value === header );
+        this.$set(headerObj, 'sortingMode', mode);
       },
     },
   }
