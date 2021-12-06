@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export default Object.freeze({
   createFilterQuery(filter) {
     if (!filter) return undefined;
@@ -12,4 +14,26 @@ export default Object.freeze({
     let filterUrl = this.createFilterQuery(filter);
     return filterUrl ? `${baseUrl}?${filterUrl}` : baseUrl;
   },
+
+  configureAxiosErrors(instance, store) {
+    instance.interceptors.response.use(
+      response => response,
+      error => {
+        if (axios.isCancel(error)) return Promise.reject(error);
+        let data = error?.response?.data ?? {};
+        let { message } = data;
+        if (typeof message === 'object') {
+          Object.entries(message).forEach(
+            ([ key, value ]) =>  store.dispatch('alerts/error', { title: data.error, text: `Error with field ${key}: ${value}` }));
+        } else if (message) {
+          store.dispatch('alerts/error', { title: data.error, text: message });
+        } else {
+          store.dispatch('alerts/error', { title: data.error });
+
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
 })
+
