@@ -9,22 +9,13 @@ import router from '@/router';
 import store from '@/store';
 import axios from 'axios';
 
-axios.interceptors.response.use(
-  response => response,
-  error => {
-    if (axios.isCancel(error)) return Promise.reject(error);
-    let data = error?.response?.data ?? {};
-    let { message } = data;
-    if (typeof message === 'object') {
-      Object.entries(message).forEach(
-        ([ key, value ]) =>  store.dispatch('alerts/error', { title: data.error, text: `Error with field ${key}: ${value}` }));
-    } else if (message) {
-      store.dispatch('alerts/error', { title: data.error, text: message });
-    }
-    return Promise.reject(error);
-  }
-);
-
+[
+  axios,
+  config.urls.AXIOS_STORAGE,
+  config.urls.AXIOS_ACTIONS
+].forEach( ax => {
+  utils.urls.configureAxiosErrors(ax, store)
+});
 
 Vue.prototype.$api = api;
 Vue.prototype.$enums = enums;
