@@ -1,11 +1,12 @@
-import axios from 'axios';
+import config from '@/config';
 import utils from '@/utils';
 
 export default Object.freeze({
   ENTITY: '',
+  axios: config.urls.AXIOS_STORAGE,
 
   async get(filter) {
-    return axios({
+    return this.axios({
       method: 'get',
       url: utils.urls.createFilterURL(`${this.ENTITY}`, filter),
     })
@@ -16,7 +17,7 @@ export default Object.freeze({
   },
 
   async getById(id) {
-    return axios({
+    return this.axios({
       method: 'get',
       url: `${this.ENTITY}/${id}`,
     })
@@ -27,7 +28,7 @@ export default Object.freeze({
   },
 
   async post(data) {
-    return axios({
+    return this.axios({
       method: 'post',
       url: `${this.ENTITY}`,
       data
@@ -41,7 +42,7 @@ export default Object.freeze({
   },
 
   async replace(id, data) {
-    return axios({
+    return this.axios({
       method: 'put',
       url: `${this.ENTITY}/${id}`,
       data
@@ -55,7 +56,7 @@ export default Object.freeze({
   },
 
   async delete(id) {
-    return axios({
+    return this.axios({
       method: 'delete',
       url: `${this.ENTITY}/${id}`,
     })

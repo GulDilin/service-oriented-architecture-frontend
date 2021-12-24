@@ -5,8 +5,9 @@ Vue.use(Router);
 
 const routes = [
   {
-    path: '/',
+    path: '/view',
     component: () => import('@/components/Main'),
+    name: 'main',
     children: [
       {
         path: 'city',
@@ -29,13 +30,22 @@ const routes = [
           content: () => import('@/components/Coordinates/Table.vue'),
         },
       },
+      {
+        path: '',
+        redirect: { name: 'city' },
+      },
     ],
+  },
+  {
+    path: '',
+    redirect: { name: 'city' },
   },
 ];
 
 const router = new Router({
   routes: routes,
   mode: 'history',
+  base: process.env.VUE_APP_SUBPATH ?? '/',
 });
 
 export default router;
