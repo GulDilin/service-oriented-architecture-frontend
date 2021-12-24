@@ -1,7 +1,7 @@
 <template>
   <v-row class="fill-height fill-width" no-gutters>
     <div class="d-flex flex-column align-stretch grow">
-      <Actions class="mb-2"></Actions>
+      <Actions class="mb-2" v-if="$config.urls.URL_API_ACTIONS"></Actions>
       <v-card height="100%" class="flex-grow-1">
         <v-tabs
           dark

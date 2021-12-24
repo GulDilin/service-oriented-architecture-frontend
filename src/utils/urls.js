@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '@/config';
 
 export default Object.freeze({
   createFilterQuery(filter) {
@@ -12,7 +13,8 @@ export default Object.freeze({
   createFilterURL(baseUrl, filter) {
     if (!filter) return baseUrl;
     let filterUrl = this.createFilterQuery(filter);
-    return filterUrl ? `${baseUrl}?${filterUrl}` : baseUrl;
+    let delim = config.urls.USE_PROXY ? '&' : '?';
+    return filterUrl ? `${baseUrl}${delim}${filterUrl}` : baseUrl;
   },
 
   configureAxiosErrors(instance, store) {
