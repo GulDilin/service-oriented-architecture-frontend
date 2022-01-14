@@ -86,11 +86,15 @@
     },
 
     methods: {
-      async calcDistToMaxPopulated() {
+      calcDistToMaxPopulated() {
         this.loadingC = true;
-        let res = await this.$api.actions.getDistanceToMaxPopulated();
-        this.distancePop = res.data?.length;
-        this.loadingC = false;
+        this.$api.actions.getDistanceToMaxPopulated()
+          .then( ({data}) => {
+            this.distancePop = data?.length;
+          })
+          .finally( () => {
+            this.loadingC = false;
+          });
       },
 
       calcDistBtw() {
